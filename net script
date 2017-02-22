@@ -1,0 +1,86 @@
+
+#!/system/bin/sh
+#this cod for nethunter to mount img file
+
+echo -n вЂњEnter the image file name вЂќ
+read userdata
+perm=$(id|cut -b 5)
+if [ вЂњ$permвЂќ != вЂњ0вЂќ ];then echo вЂњThis script requires root! Type: suвЂќ; exit; fi
+#mount img file to android
+mkdir /mnt/$userdata
+export img=/sdcard/ISO/$userdata.img
+export mnt=/mnt/$userdata
+if [ -b /dev/block/loop250 ]; then
+echo вЂњLoop device existsвЂќ
+else
+mknod /dev/block/loop250 b 7 250
+fi
+losetup /dev/block/loop250 $img
+mount  /dev/block/loop250 $mnt
+echo umount /dev/block/loop250 $mnt > uimg.sh
+echo losetup -d /dev/block/loop250 >> uimg.sh
+sleep 10
+exit
+ if [ "$1" == "mount" ] ; then
+      echo "Enter "mnt" to mount or "unm" to unmount:"
+      echo -n 
+      read userdata
+     if [ "$userdata" == "mnt" ] ; then
+		  #put file in /sdcard/n 
+      $busybox chroot $mnt sh /sdcard/nh_files/loop/img.sh
+     sleep 5
+     exit
+      fi
+       if [ "$userdata" == "unm" ]; then
+        $busybox chroot $mnt sh /sdcard/nh_files/loop/uimg.sh
+       sleep 1
+       exit
+       fi
+  fi
+
+
+  #XSDL
+  if [ "$1" == "XSDL" ] && [ "$2" == "start" ]; then
+      export DISPLAY=:0
+      am start x.org.server/.MainActivity
+      sleep 13
+      $busybox chroot $mnt sudo startxfce4
+  fi
+
+
+
+
+
+#mount
+#mount and unmount img file 
+#at first you need nod-block make nod "mknod /dev/block/loop500 b 7 400"
+# tis cod need past to /system/bin/bootkali>then just add user comand "su vi bootkali" or run in android terminal  
+if [ "$1" == "mount" ] ; then
+      echo "Enter "mnt" to mount or "unm" to unmount:"
+      echo -n 
+      read userdata
+   if [ "$userdata" == "mnt" ] ; then
+        $busybox chroot $mnt sudo mkdir /mnt/img
+        echo вЂњLoop device exists and LoadingвЂќ
+        $busybox chroot $mnt sudo losetup /dev/block/loop500 /sdcard/ISO/disk.img
+      $busybox chroot $mnt sudo  mount  /dev/block/loop500 /mnt/img
+        echo вЂњWait 5sec.....вЂќ
+        sleep 3
+        echo вЂњEnter the unm to unmount image fileвЂќ::::
+        echo -n
+        read userdata
+            if [ вЂњ$userdataвЂќ == вЂњunmвЂќ ];then
+           $busybox chroot $mnt sudo  umount /dev/block/loop500 /mnt/img
+             $busybox chroot $mnt sudo losetup -d /dev/block/loop500
+              sleep 2
+              exit
+            fi
+                 
+      fi
+    if [ "$userdata" == "unm" ]; then
+    $busybox chroot $mnt sudo umount /dev/block/loop500 /mnt/img
+      $busybox chroot $mnt sudo losetup -d /dev/block/loop500
+      sleep 2
+      exit
+    fi
+  fi
